@@ -334,14 +334,44 @@ document
     const to =
     document.getElementById("to-currency").value;
 
+    /* PREVENT EMPTY INPUT */
+
+    if(convertInput === ""){
+
+        convertInput = "1";
+    }
+
     try{
 
         const response = await fetch(
 `https://api.frankfurter.app/latest?amount=${convertInput}&from=${from}&to=${to}`
         );
 
+        /* CHECK RESPONSE */
+
+        if(!response.ok){
+
+            throw new Error(
+                "API request failed"
+            );
+        }
+
         const data =
         await response.json();
+
+        console.log(data);
+
+        /* SAFETY CHECK */
+
+        if(
+            !data.rates ||
+            !data.rates[to]
+        ){
+
+            throw new Error(
+                "Invalid conversion data"
+            );
+        }
 
         const result =
         data.rates[to];
@@ -353,14 +383,15 @@ document
 
     }catch(error){
 
+        console.error(error);
+
         document
         .getElementById("conversion-result")
         .innerText =
-            "Conversion Failed";
+            "API Error / Conversion Failed";
     }
 
 });
-
 /* THEMES */
 
 document
