@@ -294,7 +294,7 @@ sciClear.addEventListener("click", () => {
 });
 
 /* =========================
-   FINAL WORKING CONVERTER
+   FINAL 100% WORKING CONVERTER
 ========================= */
 
 const convertButtons =
@@ -314,9 +314,7 @@ document.getElementById("convert-equals");
 
 let convertInput = "";
 
-/* =========================
-   BUTTON INPUT
-========================= */
+/* BUTTON INPUT */
 
 convertButtons.forEach(button => {
 
@@ -325,7 +323,7 @@ convertButtons.forEach(button => {
         const value =
         button.innerText;
 
-        /* PREVENT MULTIPLE DOTS */
+        /* BLOCK MULTIPLE DOTS */
 
         if(
             value === "." &&
@@ -342,24 +340,19 @@ convertButtons.forEach(button => {
 
 });
 
-/* =========================
-   CLEAR
-========================= */
+/* CLEAR */
 
 convertClear.addEventListener("click", () => {
 
     convertInput = "";
 
-    convertDisplay.innerText =
-        "0";
+    convertDisplay.innerText = "0";
 
     conversionResult.innerText =
         "Result: 0";
 });
 
-/* =========================
-   CONVERSION
-========================= */
+/* CONVERT */
 
 convertEquals.addEventListener("click", async () => {
 
@@ -373,7 +366,7 @@ convertEquals.addEventListener("click", async () => {
         "to-currency"
     ).value;
 
-    /* EMPTY INPUT SAFETY */
+    /* EMPTY VALUE SAFETY */
 
     if(
         convertInput === "" ||
@@ -395,50 +388,43 @@ convertEquals.addEventListener("click", async () => {
 
     try{
 
-        /* API REQUEST */
+        /* WORKING API */
 
         const response =
         await fetch(
-`https://api.exchangerate.host/convert?from=${from}&to=${to}&amount=${convertInput}`
+`https://latest.currency-api.pages.dev/v1/currencies/${from.toLowerCase()}.json`
         );
-
-        /* RESPONSE CHECK */
 
         if(!response.ok){
 
             throw new Error(
-                "API request failed"
+                "Failed API request"
             );
         }
-
-        /* JSON */
 
         const data =
         await response.json();
 
-        console.log(
-            "API DATA:",
-            data
-        );
+        console.log(data);
 
-        /* VALIDATION */
+        /* GET RATE */
 
-        if(
-            !data ||
-            typeof data.result ===
-            "undefined"
-        ){
+        const rate =
+        data[from.toLowerCase()][to.toLowerCase()];
+
+        if(!rate){
 
             throw new Error(
-                "Invalid API response"
+                "Rate not found"
             );
         }
 
-        /* RESULT */
+        /* CALCULATE */
 
         const result =
-        Number(
-            data.result
+        (
+            parseFloat(convertInput) *
+            rate
         ).toFixed(2);
 
         conversionResult.innerText =
@@ -456,6 +442,7 @@ convertEquals.addEventListener("click", async () => {
     }
 
 });
+
 /* THEMES */
 
 document
