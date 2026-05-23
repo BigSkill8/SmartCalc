@@ -294,7 +294,7 @@ sciClear.addEventListener("click", () => {
 });
 
 /* =========================
-   FINAL STABLE CONVERTER
+   FINAL WORKING CONVERTER
 ========================= */
 
 const convertButtons =
@@ -314,15 +314,13 @@ document.getElementById("convert-equals");
 
 let convertInput = "";
 
-/* NUMBER PAD INPUT */
+/* BUTTON INPUT */
 
 convertButtons.forEach(button => {
 
     button.addEventListener("click", () => {
 
         const value = button.innerText;
-
-        /* PREVENT MULTIPLE DECIMALS */
 
         if(
             value === "." &&
@@ -339,6 +337,96 @@ convertButtons.forEach(button => {
 
 });
 
+/* CLEAR */
+
+convertClear.addEventListener("click", () => {
+
+    convertInput = "";
+
+    convertDisplay.innerText = "0";
+
+    conversionResult.innerText =
+        "Result: 0";
+});
+
+/* CONVERSION */
+
+convertEquals.addEventListener("click", async () => {
+
+    const from =
+    document.getElementById("from-currency").value;
+
+    const to =
+    document.getElementById("to-currency").value;
+
+    if(
+        convertInput === "" ||
+        convertInput === "."
+    ){
+
+        convertInput = "1";
+    }
+
+    /* SAME CURRENCY */
+
+    if(from === to){
+
+        conversionResult.innerText =
+            `Result: ${convertInput} ${to}`;
+
+        return;
+    }
+
+    try{
+
+        /* NEW API */
+
+        const response = await fetch(
+`https://open.er-api.com/v6/latest/${from}`
+        );
+
+        if(!response.ok){
+
+            throw new Error(
+                "API request failed"
+            );
+        }
+
+        const data =
+        await response.json();
+
+        console.log(data);
+
+        /* GET RATE */
+
+        const rate =
+        data.rates[to];
+
+        if(!rate){
+
+            throw new Error(
+                "Currency not found"
+            );
+        }
+
+        const result =
+        (
+            parseFloat(convertInput) *
+            rate
+        ).toFixed(2);
+
+        conversionResult.innerText =
+            `Result: ${result} ${to}`;
+
+    }catch(error){
+
+        console.error(error);
+
+        conversionResult.innerText =
+            "Conversion Failed";
+    }
+
+});
 /* CLEAR BUTTON */
 
 convertClear.addEventListener("click", () => {
