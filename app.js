@@ -314,13 +314,18 @@ document.getElementById("convert-equals");
 
 let convertInput = "";
 
-/* BUTTON INPUT */
+/* =========================
+   BUTTON INPUT
+========================= */
 
 convertButtons.forEach(button => {
 
     button.addEventListener("click", () => {
 
-        const value = button.innerText;
+        const value =
+        button.innerText;
+
+        /* PREVENT MULTIPLE DOTS */
 
         if(
             value === "." &&
@@ -337,117 +342,36 @@ convertButtons.forEach(button => {
 
 });
 
-/* CLEAR */
+/* =========================
+   CLEAR
+========================= */
 
 convertClear.addEventListener("click", () => {
 
     convertInput = "";
 
-    convertDisplay.innerText = "0";
+    convertDisplay.innerText =
+        "0";
 
     conversionResult.innerText =
         "Result: 0";
 });
 
-/* CONVERSION */
+/* =========================
+   CONVERSION
+========================= */
 
 convertEquals.addEventListener("click", async () => {
 
     const from =
-    document.getElementById("from-currency").value;
+    document.getElementById(
+        "from-currency"
+    ).value;
 
     const to =
-    document.getElementById("to-currency").value;
-
-    if(
-        convertInput === "" ||
-        convertInput === "."
-    ){
-
-        convertInput = "1";
-    }
-
-    /* SAME CURRENCY */
-
-    if(from === to){
-
-        conversionResult.innerText =
-            `Result: ${convertInput} ${to}`;
-
-        return;
-    }
-
-    try{
-
-        /* NEW API */
-
-        const response = await fetch(
-`https://open.er-api.com/v6/latest/${from}`
-        );
-
-        if(!response.ok){
-
-            throw new Error(
-                "API request failed"
-            );
-        }
-
-        const data =
-        await response.json();
-
-        console.log(data);
-
-        /* GET RATE */
-
-        const rate =
-        data.rates[to];
-
-        if(!rate){
-
-            throw new Error(
-                "Currency not found"
-            );
-        }
-
-        const result =
-        (
-            parseFloat(convertInput) *
-            rate
-        ).toFixed(2);
-
-        conversionResult.innerText =
-            `Result: ${result} ${to}`;
-
-    }catch(error){
-
-        console.error(error);
-
-        conversionResult.innerText =
-            "Conversion Failed";
-    }
-
-});
-/* CLEAR BUTTON */
-
-convertClear.addEventListener("click", () => {
-
-    convertInput = "";
-
-    convertDisplay.innerText = "0";
-
-    conversionResult.innerText =
-        "Result: 0";
-});
-
-/* CONVERT BUTTON */
-
-convertEquals.addEventListener("click", async () => {
-
-    const from =
-    document.getElementById("from-currency").value;
-
-    const to =
-    document.getElementById("to-currency").value;
+    document.getElementById(
+        "to-currency"
+    ).value;
 
     /* EMPTY INPUT SAFETY */
 
@@ -471,8 +395,11 @@ convertEquals.addEventListener("click", async () => {
 
     try{
 
-        const response = await fetch(
-`https://api.frankfurter.app/latest?amount=${convertInput}&from=${from}&to=${to}`
+        /* API REQUEST */
+
+        const response =
+        await fetch(
+`https://api.exchangerate.host/convert?from=${from}&to=${to}&amount=${convertInput}`
         );
 
         /* RESPONSE CHECK */
@@ -480,21 +407,26 @@ convertEquals.addEventListener("click", async () => {
         if(!response.ok){
 
             throw new Error(
-                `HTTP Error: ${response.status}`
+                "API request failed"
             );
         }
+
+        /* JSON */
 
         const data =
         await response.json();
 
-        console.log("API DATA:", data);
+        console.log(
+            "API DATA:",
+            data
+        );
 
-        /* DATA VALIDATION */
+        /* VALIDATION */
 
         if(
             !data ||
-            !data.rates ||
-            typeof data.rates[to] === "undefined"
+            typeof data.result ===
+            "undefined"
         ){
 
             throw new Error(
@@ -502,8 +434,12 @@ convertEquals.addEventListener("click", async () => {
             );
         }
 
+        /* RESULT */
+
         const result =
-        data.rates[to];
+        Number(
+            data.result
+        ).toFixed(2);
 
         conversionResult.innerText =
             `Result: ${result} ${to}`;
@@ -520,7 +456,6 @@ convertEquals.addEventListener("click", async () => {
     }
 
 });
-
 /* THEMES */
 
 document
